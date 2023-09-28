@@ -87,6 +87,8 @@ body {
     grid-row-end: 5;
     grid-column-start: 3;
     grid-column-end: 5;    
+    font-weight: bold;
+    font-size: 20px;
 }
 
 .User-attacks {
