@@ -32,8 +32,8 @@ let earthquakeAttack = {
 };
 
 let sandstormAttack = {
-    damage : 50,
-    accuracy : 25,
+    damage : 100,
+    accuracy : 100,
     numberOfUsage : 10
 };
 
@@ -95,8 +95,7 @@ let playerTurn = true;
 let oppoTurn = false;
 
 //Adding click eventListener to attack buttons
-attackButton.forEach(button => {
-    button.addEventListener('click', event => {
+function addAttackButton(event) {
     const typeOfAttack = event.target.id
     if (playerTurn === true && typeOfAttack === "spit" && spitAttack.numberOfUsage > 0) {
         generateNumber();
@@ -149,6 +148,7 @@ attackButton.forEach(button => {
             MsgElement.innerText = "DIGGLETT ATTACKED WITH SANDSTORM!";
             sandstormAttack.numberOfUsage -= 1;
             oppoHealth.value -= sandstormAttack.damage;
+            console.log("test");
         } else {
             MsgElement.innerText = "DIGGLETT HAS MISSED!";
             sandstormAttack.numberOfUsage -= 1;
@@ -166,12 +166,12 @@ attackButton.forEach(button => {
     //Remove buff if active
     removeBuffAfterTurn();
 
-    //Annoucing player's turn after 4 seconds
-    setTimeout(announceTurn,4000);
+    //CheckWin Status, else continue game if not won
+    checkWin();
+    };
 
-    //Opponents randomly selects an attack of its own and apply it onto userhealth.value
-    setTimeout(oppoAttack,8000);
-    });
+attackButton.forEach(button => {
+    button.addEventListener('click', addAttackButton);
 });
 
 //Function to disable the button mouseover event listener
@@ -195,23 +195,23 @@ function addListener() {
 }
 
 //Declaring opponent's attack
-const bicepCurl = {
-    damage : 2,
+let bicepCurl = {
+    damage : 100,
     accuracy : 100
 };
 
-const cuteSmile = {
-    damage : 4,
+let cuteSmile = {
+    damage : 100,
     accuracy : 75
 };
 
-const showLove = {
-    damage : 6,
+let showLove = {
+    damage : 100,
     accuracy : 50
 };
 
-const showAbs = {
-    damage : 8,
+let showAbs = {
+    damage : 100,
     accuracy : 25
 };
 
@@ -267,11 +267,7 @@ function oppoAttack() {
     playerTurn = true;
     oppoTurn = false;
 
-    //Announcing of player's turn
-    setTimeout(announceTurn,4000);
-
-    //Enabling of the mouseover eventListener
-    setTimeout(addListener,6000);
+    setTimeout(checkLose,3000);
 };
 
 //Announce player's Turn
@@ -287,8 +283,7 @@ function announceTurn() {
 let checkBuffStatus = false;
 
 //Adding of 'click' eventListeners to buff buttons
-buffButton.forEach(button => {
-    button.addEventListener('click', event => {
+function addBuffButton(event) {
     const typeOfBuff = event.target.id;
     if (playerTurn === true && typeOfBuff === "potion" && potion.numberOfUsage > 0 && userHealth.value < 100) {
         userHealth.value += potion.heal;
@@ -339,11 +334,14 @@ buffButton.forEach(button => {
     removeListener();
 
     //Annoucing player's turn after 4 seconds
-    setTimeout(announceTurn,4000);
+    setTimeout(announceTurn,3000);
 
     //Opponents randomly selects an attack of its own and apply it onto userhealth.value
-    setTimeout(oppoAttack,8000);
-    });
+    setTimeout(oppoAttack,6000);
+    };
+
+buffButton.forEach(button => {
+    button.addEventListener('click', addBuffButton);
 });
 
 //Function to check if buff is active on the next turn, and remove it after that turn
@@ -362,4 +360,105 @@ function removeBuffAfterTurn() {
             checkBuffStatus = false;           
         };
     }
+};
+
+//Creating of elements for .Level
+let x = 1;
+let y = 0;
+let level = document.querySelector('.Level');
+level.innerHTML = 'Level ' + x + '<br>High Score: ' + y;
+
+//Function to check win state and proceed to next level
+function checkWin() {
+    if (oppoHealth.value <= 0) {
+        MsgElement.innerText = "YOU HAVE WON DAVID LAID ON THIS LEVEL! MOVING ON TO THE NEXT STAGE!";
+        setTimeout(() => {
+            addListener();
+            MsgElement.innerText = "BECAREFUL AS THE OPPONENT HAS GROWN STRONGER!"
+            x += 1;
+            level.innerText = 'Level ' + x;
+            bicepCurl.damage += 5;
+            cuteSmile.damage +=5;
+            showLove.damage += 5;
+            showAbs += 5;
+            oppoHealth.value = 100;
+            playerTurn = true;
+            oppoTurn = false;
+            return;
+        },3000);
+    } else {
+    //Annoucing player's turn after 4 seconds
+    setTimeout(announceTurn,3000);
+
+    //Opponents randomly selects an attack of its own and apply it onto userhealth.value
+    setTimeout(oppoAttack,6000);
+    };
+};
+
+//Change image
+let image = document.querySelector('.Battle');
+
+//Function to remove click eventListener
+function removeClick() {
+    attackButton.forEach(button => {
+        button.removeEventListener('click', addAttackButton);
+    });
+    buffButton.forEach(button => {
+        button.removeEventListener('click', addBuffButton);
+    });
+};
+
+//Function to add click eventListener
+function addClick() {
+    attackButton.forEach(button => {
+        button.addEventListener('click', addAttackButton);
+    });
+    buffButton.forEach(button => {
+        button.addEventListener('click', addBuffButton);
+    });
+};
+
+//Function to check lose state and end the game
+function checkLose() {
+    if (userHealth.value <= 0) {
+        removeListener();
+        image.innerHTML="<div class='lose'>YOU LOST!</div>";
+        MsgElement.innerHTML="<button id='reset'>PLAY AGAIN</button>";
+        removeClick();
+        let resetButton = document.querySelector('.Message button');
+        resetButton.addEventListener('click',() => {
+            resetFeatures();
+            removeBuffAfterTurn();
+            addListener();
+            addClick();
+        });
+    } else {
+    //Announcing of player's turn
+    announceTurn();
+
+    //Enabling of the mouseover eventListener
+    setTimeout(addListener,3000);
+    };
+}
+
+//Reset features
+function resetFeatures() {
+    x = 1;
+    level.innerText = 'Level ' + x;
+    bicepCurl.damage = 2;
+    cuteSmile.damage = 4;
+    showLove.damage = 6;
+    showAbs.damage = 8;
+    image.innerHTML = "<img src='a90.jpg' alt='' width='100%' height='100%'>";
+    potion.numberOfUsage = 4;
+    attackBuff.numberOfUsage = 5;
+    accuracyBuff.numberOfUsage = 5;
+    spitAttack.numberOfUsage = 100;
+    sandAttack.numberOfUsage = 10;
+    earthquakeAttack.numberOfUsage = 10;
+    sandstormAttack.numberOfUsage = 10;
+    userHealth.value = 100;
+    MsgElement.innerHTML="Player 1's Turn";
+    playerTurn = true;
+    oppoTurn = false;
 };
