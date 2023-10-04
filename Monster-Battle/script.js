@@ -32,8 +32,8 @@ let earthquakeAttack = {
 };
 
 let sandstormAttack = {
-    damage : 100,
-    accuracy : 100,
+    damage : 50,
+    accuracy : 25,
     numberOfUsage : 10
 };
 
@@ -151,7 +151,7 @@ function addAttackButton(event) {
             console.log("test");
         } else {
             MsgElement.innerText = "DIGGLETT HAS MISSED!";
-            sandstormAttack.numberOfUsage -= 1;
+            sandstormAttack.numberOfUsage -= 1; 
         }          
     } else if (sandstormAttack.numberOfUsage <= 0 && typeOfAttack === "sandstorm") {
         MsgElement.innerText = "THIS ATTACK IS NO LONGER USABLE! PLEASE CHOOSE ANOTHER OPTION!";
@@ -162,13 +162,17 @@ function addAttackButton(event) {
 
     //Removes mouseover eventListener
     removeListener();
+    removeHealthBarListener();
+
+    //Removes click evenetListener
+    removeClick();
 
     //Remove buff if active
     removeBuffAfterTurn();
 
     //CheckWin Status, else continue game if not won
     checkWin();
-    };
+};
 
 attackButton.forEach(button => {
     button.addEventListener('click', addAttackButton);
@@ -196,22 +200,22 @@ function addListener() {
 
 //Declaring opponent's attack
 let bicepCurl = {
-    damage : 100,
+    damage : 2,
     accuracy : 100
 };
 
 let cuteSmile = {
-    damage : 100,
+    damage : 4,
     accuracy : 75
 };
 
 let showLove = {
-    damage : 100,
+    damage : 6,
     accuracy : 50
 };
 
 let showAbs = {
-    damage : 100,
+    damage : 8,
     accuracy : 25
 };
 
@@ -332,6 +336,10 @@ function addBuffButton(event) {
 
     //Removes mouseover eventListener
     removeListener();
+    removeHealthBarListener();
+
+    //Removes click evenetListener
+    removeClick();
 
     //Annoucing player's turn after 4 seconds
     setTimeout(announceTurn,3000);
@@ -363,10 +371,10 @@ function removeBuffAfterTurn() {
 };
 
 //Creating of elements for .Level
-let x = 1;
-let y = 0;
+let currentScore = 1;
+let highestScore = 0;
 let level = document.querySelector('.Level');
-level.innerHTML = 'Level ' + x + '<br>High Score: ' + y;
+level.innerHTML = 'Level ' + currentScore + '<br>High Score: ' + highestScore;
 
 //Function to check win state and proceed to next level
 function checkWin() {
@@ -374,9 +382,11 @@ function checkWin() {
         MsgElement.innerText = "YOU HAVE WON DAVID LAID ON THIS LEVEL! MOVING ON TO THE NEXT STAGE!";
         setTimeout(() => {
             addListener();
+            addClick();
+            addHealthBarListener();
             MsgElement.innerText = "BECAREFUL AS THE OPPONENT HAS GROWN STRONGER!"
-            x += 1;
-            level.innerText = 'Level ' + x;
+            currentScore += 1;
+            level.innerHTML = 'Level ' + currentScore + '<br>High Score: ' + highestScore;
             bicepCurl.damage += 5;
             cuteSmile.damage +=5;
             showLove.damage += 5;
@@ -421,30 +431,34 @@ function addClick() {
 //Function to check lose state and end the game
 function checkLose() {
     if (userHealth.value <= 0) {
-        removeListener();
         image.innerHTML="<div class='lose'>YOU LOST!</div>";
         MsgElement.innerHTML="<button id='reset'>PLAY AGAIN</button>";
-        removeClick();
         let resetButton = document.querySelector('.Message button');
         resetButton.addEventListener('click',() => {
             resetFeatures();
             removeBuffAfterTurn();
             addListener();
             addClick();
+            addHealthBarListener();
         });
+        if (currentScore > highestScore) {
+            highestScore = currentScore;
+        };
     } else {
     //Announcing of player's turn
     announceTurn();
 
     //Enabling of the mouseover eventListener
     setTimeout(addListener,3000);
+    setTimeout(addHealthBarListener,3000);
+    setTimeout(addClick,3000);
     };
 }
 
 //Reset features
 function resetFeatures() {
-    x = 1;
-    level.innerText = 'Level ' + x;
+    currentScore = 1;
+    level.innerHTML = 'Level ' + currentScore + '<br>High Score: ' + highestScore;
     bicepCurl.damage = 2;
     cuteSmile.damage = 4;
     showLove.damage = 6;
@@ -462,3 +476,28 @@ function resetFeatures() {
     playerTurn = true;
     oppoTurn = false;
 };
+
+//Function to check health
+let userHealthBar = document.querySelector('.User progress');
+let oppoHealthBar = document.querySelector('.Opponent progress');
+function checkHealth(event) {
+    let healthBar = event.target.id
+    if (healthBar === "user-health") {    
+        MsgElement.innerHTML = "Digglett HP: " + userHealth.value + " / " + userHealth.max;
+    } else if (healthBar === "oppo-health") {
+        MsgElement.innerHTML = "David Laid HP: " + oppoHealth.value + " / " + oppoHealth.max;
+    };
+};
+
+function addHealthBarListener() {
+    userHealthBar.addEventListener('mouseover',checkHealth);
+    oppoHealthBar.addEventListener('mouseover',checkHealth);
+};
+
+//Function to remove function to check health
+function removeHealthBarListener() {
+    userHealthBar.removeEventListener('mouseover',checkHealth);
+    oppoHealthBar.removeEventListener('mouseover',checkHealth);
+};
+
+addHealthBarListener();
