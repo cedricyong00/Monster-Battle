@@ -32,8 +32,8 @@ let earthquakeAttack = {
 };
 
 let sandstormAttack = {
-    damage : 50,
-    accuracy : 25,
+    damage : 100,
+    accuracy : 100,
     numberOfUsage : 10
 };
 
@@ -471,6 +471,7 @@ function resetFeatures() {
     sandAttack.numberOfUsage = 10;
     earthquakeAttack.numberOfUsage = 10;
     sandstormAttack.numberOfUsage = 10;
+    oppoHealth.value = 100;
     userHealth.value = 100;
     MsgElement.innerHTML="Player 1's Turn";
     playerTurn = true;
@@ -501,3 +502,9 @@ function removeHealthBarListener() {
 };
 
 addHealthBarListener();
+
+//Shortcut to intialise lose state
+    userHealthBar.addEventListener('click',() => {
+        userHealth.value = 0;
+        checkLose();
+    });
