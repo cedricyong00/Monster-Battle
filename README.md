@@ -5,7 +5,7 @@ User would have 4 different attacks to choose from, with each having their own e
 
 Language used for the game : Javascript, CSS, HTML
 
-Game URL : cedricyong00.github.io/Monster-Battle
+Game URL : [cedricyong00.github.io/Monster-Battle](https://cedricyong00.github.io/Monster-Battle/)
 
 Planned future enhancements : 
 - Adding of visual effects for the attacks
