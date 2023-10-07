@@ -501,6 +501,7 @@ function removeHealthBarListener() {
     oppoHealthBar.removeEventListener('mouseover',checkHealth);
 };
 
+//Function call back to add ability to check specific health value
 addHealthBarListener();
 
 //Shortcut to intialise lose state
