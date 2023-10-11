@@ -32,8 +32,8 @@ let earthquakeAttack = {
 };
 
 let sandstormAttack = {
-    damage : 100,
-    accuracy : 100,
+    damage : 50,
+    accuracy : 25,
     numberOfUsage : 10
 };
 
